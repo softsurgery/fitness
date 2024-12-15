@@ -12,27 +12,81 @@ public class ActivityService {
 
     public ActivityService(String filepath, int capacity) {
         this.filepath = filepath;
-        activities = new Activity[capacity];
-        nbrActivities = 0;
+        this.activities = new Activity[capacity];
+        this.nbrActivities = 0;
     }
 
     public Activity readActivity(Scanner scanner){
+        //clean stdin (buffer)
         scanner.nextLine();
+
+        //create an activity object
         Activity activity = new Activity();
+
+        //read activity's id
+        System.out.print("ID : ");
+        activity.setId(scanner.nextInt());
+        scanner.nextLine();
+
+        //read activity's label
         System.out.print("Label : ");
         activity.setLabel(scanner.nextLine());
+
+        //read activity's base price
         System.out.print("Base Price : ");
         activity.setBasePrice(scanner.nextFloat());
+
+        //read activity's max material count
         System.out.print("Maximum Material Count : ");
         activity.resetMaterial(scanner.nextInt());
         return activity;
     }
 
-    public void addActivity(Activity activity) {
+    public int searchActivityById(int id) {
+        int i = 0;
+        boolean found = false;
+        while (i < nbrActivities && !found) {
+            if (activities[i].getId() == id) found = true;
+            else i++;
+        }
+        return found ? i : -1;
+    }
+
+    public boolean addActivity(Activity activity) {
         if (nbrActivities < activities.length) {
-            activities[nbrActivities++] = activity;
+            if (searchActivityById(activity.getId()) == -1){
+                activities[nbrActivities] = activity;
+                nbrActivities++;
+                return true;
+            } else {
+                System.out.println("Activity is already added");
+            }
         } else {
             System.out.println("Activity list is full!");
+        }
+        return false;
+    }
+
+    public boolean removeActivity(int id){
+        int index = searchActivityById(id);
+        if (index!= -1) {
+            for (int i = index; i < nbrActivities - 1; i++) {
+                activities[i] = activities[i + 1];
+            }
+            activities[nbrActivities - 1] = null;
+            nbrActivities--;
+            return true;
+        } else {
+            System.out.println("Activity not found!");
+        }
+        return false;
+    }
+
+    public void updateActivity(int id, Activity activity) {
+        activity.setId(id);
+        int index = searchActivityById(id);
+        if (index!= -1) {
+            activities[index] = activity;
         }
     }
 
@@ -56,7 +110,17 @@ public class ActivityService {
         }
     }
 
+    public Activity getActivityById(int id) {
+        int index = searchActivityById(id);
+        return index!= -1 ? activities[index] : null;
+    }
+
+
     public void printActivities() {
+        if (nbrActivities == 0) {
+            System.out.println("No activities found!");
+            return;
+        }
         for (int i = 0; i < nbrActivities; i++) {
             System.out.println(activities[i]);
         }

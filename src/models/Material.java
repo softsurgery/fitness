@@ -1,6 +1,9 @@
 package models;
 
-public class Material {
+import java.io.Serializable;
+
+public class Material implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int id;
     private String label;
     private float price;
@@ -38,9 +41,6 @@ public class Material {
 
     @Override
     public String toString() {
-        return "Material{" +
-                "label='" + label + '\'' +
-                ", price=" + price +
-                '}';
+        return "Material with ID = " + id + ", label='" + label + ", price = " + price;
     }
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Activity implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    private int id;
     private String label;
     private float basePrice;
     private Material[] materials;
@@ -12,7 +12,8 @@ public class Activity implements Serializable {
 
     public Activity() {}
 
-    public Activity(String label, float basePrice, int size) {
+    public Activity(int id, String label, float basePrice, int size) {
+        this.id = id;
         this.label = label;
         this.basePrice = basePrice;
         this.materials = new Material[size];
@@ -22,6 +23,14 @@ public class Activity implements Serializable {
     public void resetMaterial(int size) {
         this.materials = new Material[size];
         this.nbrMaterials = 0;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getLabel() {
@@ -44,24 +53,34 @@ public class Activity implements Serializable {
         return materials;
     }
 
-    public int searchMaterials(Material material) {
+    public int searchMaterials(int id) {
         int i = 0;
         boolean found = false;
         while (i < nbrMaterials && !found) {
-            if (material.getId() == materials[i].getId()) found = true;
+            if (id == materials[i].getId()) found = true;
             else i++;
         }
         return found ? i : -1; //ternary operator
     }
 
-    public void addMaterial(Material material) {
+    public boolean addMaterial(Material material) {
         if (nbrMaterials < materials.length){
-            if (searchMaterials(material) == -1) {
+            if (searchMaterials(material.getId()) == -1) {
                 materials[nbrMaterials] = material;
                 nbrMaterials++;
+                return true;
             } else System.out.println("This Material has been added already");
         } else {
             System.out.println("Maximum number of materials reached");
+        }
+        return false;
+    }
+
+    public void updateMaterial(int id, Material material) {
+        material.setId(id);
+        int index = searchMaterials(material.getId());
+        if (index!= -1) {
+            materials[index] = material;
         }
     }
 
@@ -69,7 +88,7 @@ public class Activity implements Serializable {
         if (nbrMaterials == 0){
             System.out.println("No materials to remove");
         } else {
-            int index = searchMaterials(material);
+            int index = searchMaterials(material.getId());
             if (index != -1) {
                 for (int i = index; i < nbrMaterials - 1; i++) {
                     materials[i] = materials[i + 1];
@@ -82,9 +101,12 @@ public class Activity implements Serializable {
 
     @Override
     public String toString() {
-        return "Activity{" +
-                "label='" + label + '\'' +
-                ", basePrice=" + basePrice +
-                '}';
+        String materialData = "";
+        for (int i = 0; i < nbrMaterials; i++) {
+            materialData += materials[i].toString() + "\n";
+        }
+        if (materialData.isEmpty()) materialData  = "No Materials found";
+        else materialData = "We got " + nbrMaterials + " material(s) \n " + materialData;
+        return "Activity with ID = " + id + ", label=" + label + ", base price = " + basePrice + ", Capacity = "+ materials.length + "\n" + materialData;
     }
 }
